@@ -139,7 +139,31 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future _functionLogar() async {
+
+    String username = 'tavoando';
+    String password = 'deitando';
+    String basicAuth =
+        'Basic ' + base64Encode(utf8.encode('$username:$password'));
+
+    var body = {
+      "username": "${usuarioLogin}",
+      "password": "${senhaLogin}",
+      "grant_type": "password"
+    };
+
     http.Response response;
+    response = await http.post("http://andreeez.ddns.net:9090/oauth/token",
+        headers: <String, String>{
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'authorization': basicAuth,
+        },
+        body: body);
+
+    Map<String, dynamic> usuarioLogado = jsonDecode(response.body);
+
+    print(response.body);
+
+    /*http.Response response;
     response = await http.get(
         "http://andreeez.ddns.net:8080/picos/login/${usuarioLogin}/${senhaLogin}");
 
@@ -161,6 +185,6 @@ class _LoginPageState extends State<LoginPage> {
         message: "Os dados não conferem",
         duration: Duration(seconds: 3),
       )..show(context);
-    }
+    }*/
   }
 }
