@@ -4,8 +4,9 @@ import 'package:artes_decoracoes/components/button_primary.dart';
 import 'package:artes_decoracoes/components/divider_or.dart';
 import 'package:artes_decoracoes/components/input_text.dart';
 import 'package:artes_decoracoes/components/primary_title.dart';
+import 'package:artes_decoracoes/constants/default_config.dart';
+import 'package:artes_decoracoes/model/Usuario.dart';
 import 'package:artes_decoracoes/pages/cadastra_usuario.dart';
-import 'package:artes_decoracoes/pages/cadastra_usuario_cep.dart';
 import 'package:artes_decoracoes/pages/cliente/home_page_cliente.dart';
 import 'package:artes_decoracoes/pages/prestador/home_page_prestador.dart';
 import 'package:flushbar/flushbar.dart';
@@ -24,11 +25,12 @@ class _LoginPageState extends State<LoginPage> {
   String usuarioLogin;
   String senhaLogin;
   ProgressDialog pr;
+  DefaultConfig config = new DefaultConfig();
+  String urlPadrao;
 
   @override
   void initState() {
     super.initState();
-
     pr = new ProgressDialog(
       context,
       isDismissible: false,
@@ -46,6 +48,8 @@ class _LoginPageState extends State<LoginPage> {
             color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w400),
         messageTextStyle: TextStyle(
             color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600));
+    
+    urlPadrao = config.retornaUrlPadrao();
   }
 
   @override
@@ -160,7 +164,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future _functionLogar() async {
-
     pr.show();
 
     String username = 'tavoando';
@@ -174,7 +177,7 @@ class _LoginPageState extends State<LoginPage> {
     };
 
     http.Response response;
-    response = await http.post("http://andreeez.ddns.net:9090/oauth/token",
+    response = await http.post("${urlPadrao}oauth/token",
         headers: <String, String>{
           'Content-Type': 'application/x-www-form-urlencoded',
           'authorization': basicAuth,
@@ -184,16 +187,21 @@ class _LoginPageState extends State<LoginPage> {
     Map<String, dynamic> usuarioLogado = jsonDecode(response.body);
 
     if(usuarioLogado['access_token'] != null ){
-      pr.hide();
-      
       SharedPreferences saveLocale = await SharedPreferences.getInstance();
 
       await saveLocale.setString('username', '${usuarioLogin}');
       await saveLocale.setString('password', '${senhaLogin}');
       await saveLocale.setString('token', usuarioLogado['access_token']);
 
+      Usuario usuario = await carregaInfoUsuario();
+      pr.hide();
       Navigator.pop(context);
-      Navigator.push(context, MaterialPageRoute(builder: (context) => HomePageCliente()));
+  
+      if(usuario.getTipoCliente() == 'cliente'){
+        Navigator.push(context, MaterialPageRoute(builder: (context) => HomePageCliente()));
+      }else{
+        Navigator.push(context, MaterialPageRoute(builder: (context) => HomePagePrestador()));
+      }
     }else{
       pr.hide();
 
@@ -204,6 +212,31 @@ class _LoginPageState extends State<LoginPage> {
         message: "Os dados de acesso, não confere",
         duration: Duration(seconds: 3),
       )..show(context);
+    }
+  }
+
+  Future<Usuario> carregaInfoUsuario() async{
+    Usuario usuario;
+    http.Response response;
+
+    try {
+      response = await http.post("${urlPadrao}picos/info-usuario?usuario=${usuarioLogin}");
+
+      Map<String, dynamic> infoUsuario = jsonDecode(response.body);
+
+      usuario.setLoginUsuario(infoUsuario['usuarioCadatsro']);
+      usuario.setEmailUsuario(infoUsuario['emailCadastro']);
+      usuario.setFoneUsuario(infoUsuario['foneCadastro']);
+      usuario.setIdEndereco(infoUsuario['enderecoUsuario']);
+      usuario.setIdFotoPerfil(infoUsuario['idImagePefil']);
+      usuario.setIdUsuario(infoUsuario['idCadastro']);
+      usuario.setNomeUsuario(infoUsuario['nomeCadastro']);
+      usuario.setTipoCliente(infoUsuario['tipoCadastro  ']);
+      usuario.setLoginUsuario(infoUsuario['usuarioCadatsro']);
+
+      return usuario;
+    } catch (e) {
+      print(e);
     }
   }
 }
