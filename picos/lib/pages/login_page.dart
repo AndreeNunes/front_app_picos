@@ -12,6 +12,8 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:progress_dialog/progress_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -21,10 +23,29 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   String usuarioLogin;
   String senhaLogin;
+  ProgressDialog pr;
 
   @override
   void initState() {
     super.initState();
+
+    pr = new ProgressDialog(
+      context,
+      isDismissible: false,
+    );
+    pr.style(
+        message: 'Por favor aguarde...',
+        borderRadius: 20.0,
+        backgroundColor: Colors.white,
+        progressWidget: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.purple),
+        ),
+        padding: EdgeInsets.all(30),
+        maxProgress: 100.0,
+        progressTextStyle: TextStyle(
+            color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w400),
+        messageTextStyle: TextStyle(
+            color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600));
   }
 
   @override
@@ -140,10 +161,11 @@ class _LoginPageState extends State<LoginPage> {
 
   Future _functionLogar() async {
 
+    pr.show();
+
     String username = 'tavoando';
     String password = 'deitando';
-    String basicAuth =
-        'Basic ' + base64Encode(utf8.encode('$username:$password'));
+    String basicAuth = 'Basic ' + base64Encode(utf8.encode('$username:$password'));
 
     var body = {
       "username": "${usuarioLogin}",
@@ -161,30 +183,27 @@ class _LoginPageState extends State<LoginPage> {
 
     Map<String, dynamic> usuarioLogado = jsonDecode(response.body);
 
-    print(response.body);
+    if(usuarioLogado['access_token'] != null ){
+      pr.hide();
+      
+      SharedPreferences saveLocale = await SharedPreferences.getInstance();
 
-    /*http.Response response;
-    response = await http.get(
-        "http://andreeez.ddns.net:8080/picos/login/${usuarioLogin}/${senhaLogin}");
+      await saveLocale.setString('username', '${usuarioLogin}');
+      await saveLocale.setString('password', '${senhaLogin}');
+      await saveLocale.setString('token', usuarioLogado['access_token']);
 
-    Map<String, dynamic> usuarioLogado = jsonDecode(response.body);
+      Navigator.pop(context);
+      Navigator.push(context, MaterialPageRoute(builder: (context) => HomePageCliente()));
+    }else{
+      pr.hide();
 
-    if (usuarioLogado['logadoCadastro'] == 'true') {
-      if (usuarioLogado['tipoCadastro'] == 'prestador') {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => HomePagePrestador()));
-      } else if (usuarioLogado['tipoCadastro'] == 'cliente') {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => HomePageCliente()));
-      }
-    } else {
       return Flushbar(
         title: "Aviso",
         icon: Icon(Icons.warning),
         backgroundColor: Colors.purpleAccent,
-        message: "Os dados não conferem",
+        message: "Os dados de acesso, não confere",
         duration: Duration(seconds: 3),
       )..show(context);
-    }*/
+    }
   }
 }
