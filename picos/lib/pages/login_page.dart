@@ -9,6 +9,7 @@ import 'package:artes_decoracoes/model/Usuario.dart';
 import 'package:artes_decoracoes/pages/cadastra_usuario.dart';
 import 'package:artes_decoracoes/pages/cliente/home_page_cliente.dart';
 import 'package:artes_decoracoes/pages/prestador/home_page_prestador.dart';
+import 'package:artes_decoracoes/services/carrega_info_usuario.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -187,24 +188,24 @@ class _LoginPageState extends State<LoginPage> {
     Map<String, dynamic> usuarioLogado = jsonDecode(response.body);
 
     if(usuarioLogado['access_token'] != null ){
+      CarregaInfoUsuario carregaInfoUsuario = new CarregaInfoUsuario();
       SharedPreferences saveLocale = await SharedPreferences.getInstance();
 
       await saveLocale.setString('username', '${usuarioLogin}');
       await saveLocale.setString('password', '${senhaLogin}');
       await saveLocale.setString('token', usuarioLogado['access_token']);
 
-      Usuario usuario = await carregaInfoUsuario();
+      Usuario usuario = await carregaInfoUsuario.carregaInfoUsuario('${usuarioLogin}');
       pr.hide();
       Navigator.pop(context);
-  
+
       if(usuario.getTipoCliente() == 'cliente'){
-        Navigator.push(context, MaterialPageRoute(builder: (context) => HomePageCliente()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => HomePageCliente(usuario)));
       }else{
         Navigator.push(context, MaterialPageRoute(builder: (context) => HomePagePrestador()));
       }
     }else{
       pr.hide();
-
       return Flushbar(
         title: "Aviso",
         icon: Icon(Icons.warning),
@@ -212,31 +213,6 @@ class _LoginPageState extends State<LoginPage> {
         message: "Os dados de acesso, não confere",
         duration: Duration(seconds: 3),
       )..show(context);
-    }
-  }
-
-  Future<Usuario> carregaInfoUsuario() async{
-    Usuario usuario;
-    http.Response response;
-
-    try {
-      response = await http.post("${urlPadrao}picos/info-usuario?usuario=${usuarioLogin}");
-
-      Map<String, dynamic> infoUsuario = jsonDecode(response.body);
-
-      usuario.setLoginUsuario(infoUsuario['usuarioCadatsro']);
-      usuario.setEmailUsuario(infoUsuario['emailCadastro']);
-      usuario.setFoneUsuario(infoUsuario['foneCadastro']);
-      usuario.setIdEndereco(infoUsuario['enderecoUsuario']);
-      usuario.setIdFotoPerfil(infoUsuario['idImagePefil']);
-      usuario.setIdUsuario(infoUsuario['idCadastro']);
-      usuario.setNomeUsuario(infoUsuario['nomeCadastro']);
-      usuario.setTipoCliente(infoUsuario['tipoCadastro  ']);
-      usuario.setLoginUsuario(infoUsuario['usuarioCadatsro']);
-
-      return usuario;
-    } catch (e) {
-      print(e);
     }
   }
 }

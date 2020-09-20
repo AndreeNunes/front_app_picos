@@ -6,7 +6,7 @@ class Usuario {
   String foneUsuario;
   String tipoCliente;
   String idFotoPerfil;
-  String idEndereco;
+  int idEndereco;
   String loginUsuario;
 
 	String getLoginUsuario() {
@@ -16,7 +16,7 @@ class Usuario {
 	 void setLoginUsuario(String loginUsuario) {
 		this.loginUsuario = loginUsuario;
 	}
-  
+
   int getIdUsuario() {
     return this.idUsuario;
   }
@@ -65,11 +65,11 @@ class Usuario {
     this.idFotoPerfil = idFotoPerfil;
   }
 
-  String getIdEndereco() {
+  int getIdEndereco() {
     return this.idEndereco;
   }
 
-  void setIdEndereco(String idEndereco) {
+  void setIdEndereco(int idEndereco) {
     this.idEndereco = idEndereco;
   }  
 }

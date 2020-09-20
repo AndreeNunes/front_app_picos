@@ -1,3 +1,4 @@
+import 'package:artes_decoracoes/model/Usuario.dart';
 import 'package:artes_decoracoes/pages/cliente/home_page_cliente.dart';
 import 'package:artes_decoracoes/pages/home_page.dart';
 import 'package:artes_decoracoes/pages/login_page.dart';
@@ -16,11 +17,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     return MaterialApp(
       title: 'Flutter Demo',
       theme: _buildTheme(context),
-      home: usuario == null ? LoginPage() : HomePageCliente(),
+      home: LoginPage(),
     );
   }
 

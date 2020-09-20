@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:artes_decoracoes/components/button_primary.dart';
+import 'package:artes_decoracoes/model/Usuario.dart';
 import 'package:artes_decoracoes/pages/cliente/home_page_cliente.dart';
 import 'package:artes_decoracoes/pages/prestador/home_page_prestador.dart';
+import 'package:artes_decoracoes/services/carrega_info_usuario.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -10,13 +12,27 @@ import 'package:http/http.dart' as http;
 import 'package:progress_dialog/progress_dialog.dart';
 
 class CadastraUsuarioTipo extends StatefulWidget {
+  String usuario;
+
+  CadastraUsuarioTipo(String usuario){
+    this.usuario = usuario;
+  }
+
   @override
-  _CadastraUsuarioTipoState createState() => _CadastraUsuarioTipoState();
+  _CadastraUsuarioTipoState createState() => _CadastraUsuarioTipoState(usuario);
 }
 
 class _CadastraUsuarioTipoState extends State<CadastraUsuarioTipo> {
   int isClient = 0;
   ProgressDialog pr;
+  Usuario usuario = new Usuario();
+  CarregaInfoUsuario carregaInfoUsuario = new CarregaInfoUsuario();
+  String usuarioLogin;
+
+  _CadastraUsuarioTipoState(String usuarioLogin){
+    this.usuarioLogin = usuarioLogin;
+  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -271,15 +287,18 @@ class _CadastraUsuarioTipoState extends State<CadastraUsuarioTipo> {
         pr.show();
       });
       response = await http.get(
-          "http://andreeez.ddns.net:8080/picos/finaliza/cadastro/${isClient}");
+          "http://andreeez.ddns.net:9090/picos/finaliza/cadastro/${isClient}");
 
       setState(() {
         pr.hide();
       });
 
+      usuario = await carregaInfoUsuario.carregaInfoUsuario(usuarioLogin);
+
       if (isClient == 1) {
+        Usuario usuario = new Usuario();
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => HomePageCliente()));
+            MaterialPageRoute(builder: (context) => HomePageCliente(usuario)));
       } else if (isClient == 2) {
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => HomePagePrestador()));

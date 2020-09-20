@@ -155,7 +155,7 @@ class _CadastraUsuarioState extends State<CadastraUsuario> {
         http.Response response;
 
         response = await http.get(
-            "http://andreeez.ddns.net:8080/picos/valida/cadastro/${email}/${usuario}/${telefone}/${senha}/");
+            "http://andreeez.ddns.net:9090/picos/valida/cadastro/${email}/${usuario}/${telefone}/${senha}/");
 
         Map<String, dynamic> prosseguir = jsonDecode(response.body);
 
@@ -179,7 +179,7 @@ class _CadastraUsuarioState extends State<CadastraUsuario> {
           });
 
           Navigator.push(context,
-              MaterialPageRoute(builder: (context) => CadastraUsuarioPhoto()));
+              MaterialPageRoute(builder: (context) => CadastraUsuarioPhoto(usuario)));
         }
       } catch (e) {
         print(e);

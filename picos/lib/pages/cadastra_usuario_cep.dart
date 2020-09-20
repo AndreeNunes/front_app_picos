@@ -11,8 +11,13 @@ import 'package:http/http.dart' as http;
 import 'package:progress_dialog/progress_dialog.dart';
 
 class CadastraUsuarioCep extends StatefulWidget {
+  String usuario;
+
+  CadastraUsuarioCep(String usuario){
+    this.usuario = usuario;
+  }
   @override
-  _CadastraUsuarioCepState createState() => _CadastraUsuarioCepState();
+  _CadastraUsuarioCepState createState() => _CadastraUsuarioCepState(usuario);
 }
 
 class _CadastraUsuarioCepState extends State<CadastraUsuarioCep> {
@@ -22,6 +27,11 @@ class _CadastraUsuarioCepState extends State<CadastraUsuarioCep> {
   ProgressDialog pr;
   final focus = FocusNode();
   Map<String, dynamic> cepEncontradoGlobal;
+  String usuario;
+
+  _CadastraUsuarioCepState(String usuario){
+    this.usuario = usuario;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -235,9 +245,9 @@ class _CadastraUsuarioCepState extends State<CadastraUsuarioCep> {
     String cidade = cepEncontradoGlobal['localidade'];
     String uf = cepEncontradoGlobal['uf'];
 
-    response = await http.get("http://andreeez.ddns.net:8080/picos/valida/endereco/${cep}/${rua}/${bairro}/${cidade}/${uf}/${numero}/${complemento}");
+    response = await http.get("http://andreeez.ddns.net:9090/picos/valida/endereco/${cep}/${rua}/${bairro}/${cidade}/${uf}/${numero}/${complemento}");
     
     Navigator.push(context,
-              MaterialPageRoute(builder: (context) => CadastraUsuarioTipo()));
+              MaterialPageRoute(builder: (context) => CadastraUsuarioTipo(usuario)));
   }
 }

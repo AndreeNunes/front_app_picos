@@ -11,14 +11,25 @@ import 'package:image_picker/image_picker.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
 class CadastraUsuarioPhoto extends StatefulWidget {
+  String usuario;
+
+  CadastraUsuarioPhoto(String usuario){
+    this.usuario = usuario;
+  }
+
   @override
-  _CadastraUsuarioPhotoState createState() => _CadastraUsuarioPhotoState();
+  _CadastraUsuarioPhotoState createState() => _CadastraUsuarioPhotoState(usuario);
 }
 
 class _CadastraUsuarioPhotoState extends State<CadastraUsuarioPhoto> {
   String urlImage = '';
   bool loading = false;
   ProgressDialog pr;
+  String usuario;
+
+  _CadastraUsuarioPhotoState(String usuario){
+    this.usuario = usuario;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -193,11 +204,11 @@ class _CadastraUsuarioPhotoState extends State<CadastraUsuarioPhoto> {
     http.Response response;
 
     if(urlImage != null){
-      response = await http.get("http://andreeez.ddns.net:8080/picos/foto/cadastro/${urlImage}");
+      response = await http.get("http://andreeez.ddns.net:9090/picos/foto/cadastro/${urlImage}");
     }
 
     Navigator.push(context,
-              MaterialPageRoute(builder: (context) => CadastraUsuarioCep()));
+              MaterialPageRoute(builder: (context) => CadastraUsuarioCep(usuario)));
   }
 
 }

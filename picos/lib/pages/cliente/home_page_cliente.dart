@@ -1,15 +1,27 @@
+import 'package:artes_decoracoes/components/drawer_header_default.dart';
+import 'package:artes_decoracoes/model/Usuario.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePageCliente extends StatefulWidget {
+  Usuario usuario = new Usuario();
+  HomePageCliente(Usuario usuario) {
+    this.usuario = usuario;
+  }
+
   @override
-  _HomePageClienteState createState() => _HomePageClienteState();
+  _HomePageClienteState createState() => _HomePageClienteState(usuario);
 }
 
 class _HomePageClienteState extends State<HomePageCliente> {
   ProgressDialog pr;
+  Usuario usuario = new Usuario();
+
+  _HomePageClienteState(Usuario usuario) {
+    this.usuario = usuario;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,9 +33,8 @@ class _HomePageClienteState extends State<HomePageCliente> {
   }
 
   @protected
-  @mustCallSuper
-  // ignore: must_call_super
   void initState() {
+    super.initState();
     pr = new ProgressDialog(
       context,
       isDismissible: false,
@@ -43,7 +54,7 @@ class _HomePageClienteState extends State<HomePageCliente> {
             color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600));
   }
 
-    _appBar() {
+  _appBar() {
     return AppBar(
       elevation: 0,
       title: Text("Cadastro"),
@@ -53,32 +64,54 @@ class _HomePageClienteState extends State<HomePageCliente> {
 
   _buildDrawer() {
     return Drawer(
-      // Add a ListView to the drawer. This ensures the user can scroll
-      // through the options in the drawer if there isn't enough vertical
-      // space to fit everything.
       child: ListView(
-        // Important: Remove any padding from the ListView.
         padding: EdgeInsets.zero,
         children: <Widget>[
-          DrawerHeader(
-            child: Text('Drawer Header'),
-            decoration: BoxDecoration(
-              color: Colors.blue,
+          DrawerHeaderDefault(
+            usuario.getNomeUsuario(),
+            usuario.getEmailUsuario(),
+            usuario.getIdFotoPerfil()
+          ),
+          ListTile(
+            leading: Icon(FontAwesomeIcons.addressCard),
+            title: Text('Perfil'),
+            onTap: () {},
+          ),
+          ListTile(
+            leading: Icon(FontAwesomeIcons.history),
+            title: Text('Historico'),
+            onTap: () {},
+          ),
+          ListTile(
+            leading: Icon(FontAwesomeIcons.cogs),
+            title: Text('Configurações'),
+            onTap: () {},
+          ),
+          ListTile(
+            leading: Icon(FontAwesomeIcons.envelopeOpenText),
+            title: Text('Entre em contato'),
+            onTap: () {},
+          ),
+          ListTile(
+            leading: Icon(FontAwesomeIcons.reply),
+            title: Text('Sair'),
+            onTap: () {},
+          ),
+          Container(
+            child: Align(
+              alignment: FractionalOffset.bottomCenter,
+              child: Column(
+                children: <Widget>[
+                  Divider(),
+                  ListTile(
+                      leading: Icon(FontAwesomeIcons.facebook),
+                      title: Text('Facebook')),
+                  ListTile(
+                      leading: Icon(FontAwesomeIcons.instagram),
+                      title: Text('Instagram'))
+                ],
+              ),
             ),
-          ),
-          ListTile(
-            title: Text('Item 1'),
-            onTap: () {
-              // Update the state of the app.
-              // ...
-            },
-          ),
-          ListTile(
-            title: Text('Item 2'),
-            onTap: () {
-              // Update the state of the app.
-              // ...
-            },
           ),
         ],
       ),
